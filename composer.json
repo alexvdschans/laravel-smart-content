@@ -1,0 +1,20 @@
+{
+    "name": "avds/smartcontent",
+    "description": "Connect with the SmartContent API",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Alex van der Schans",
+            "email": "alex@myragis.nl"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "avds\\smartcontent\\src\\SmartContentServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "require": {}
+}
