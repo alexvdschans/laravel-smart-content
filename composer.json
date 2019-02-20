@@ -8,13 +8,24 @@
             "email": "alex@myragis.nl"
         }
     ],
+
+    "autoload": {
+        "psr-4": {
+          "AvdS\\SmartContent\\": "src/"
+        },
+        "files": [
+          "src/helpers.php"
+        ]
+    },    
     "extra": {
         "laravel": {
             "providers": [
-                "avds\\smartcontent\\src\\SmartContentServiceProvider"
-            ]
+                "AvdS\\SmartContent\\Providers\\SmartContentServiceProvider"
+            ],
+            "aliases": {
+                "SmartContent": "AvdS\\SmartContent\\Facades\\SmartContent"
+            }
         }
     },
-    "minimum-stability": "dev",
-    "require": {}
+    "minimum-stability": "dev"
 }
