@@ -5,6 +5,8 @@ class Comment extends SearchMap {
     public $model; 
     
     public $parent;
+
+    public $type = 'comment';
     
     public function __construct($model)
     {
