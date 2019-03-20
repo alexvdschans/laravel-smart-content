@@ -24,6 +24,7 @@ trait Indexable {
         } else {
             //hardcoded example for now
             $extra_keywords = [[
+                'id' => 100,
                 'keyword' => 'king',
                 'url' => 'https://imu.nl/'
             ]];

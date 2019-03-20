@@ -96,7 +96,7 @@ class Engine {
     {
         $url = '/api/v1/index';
 
-        if($data['use_internal_links'] == true) {
+        if(isset($data['use_internal_links']) && $data['use_internal_links'] == true) {
             $url .= '?internal_links=true&internal_link_field=content';
         }
 
@@ -104,7 +104,9 @@ class Engine {
             'form_params'   => $data,
             'headers'       => $this->headers
         ]);
-        
+
+        Log:info($request->getBody());
+
         return true;
     }   
     
