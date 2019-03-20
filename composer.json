@@ -13,7 +13,7 @@
         "psr-4": {
           "AvdS\\SmartContent\\": "src/"
         }
-    },    
+    },     
     "extra": {
         "laravel": {
             "providers": [

@@ -1,7 +1,9 @@
 <?php namespace AvdS\SmartContent\Resources;
 
 class Topic extends SearchMap {
-    
+
+    public $type = 'topic';
+
     public function __construct($model)
     {
        parent::__construct($model);

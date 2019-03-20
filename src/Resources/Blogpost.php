@@ -1,16 +1,19 @@
 <?php namespace AvdS\SmartContent\Resources;
 
-class Blogpost extends SearchMap {
+class BlogPost extends SearchMap {
 
     public $model; 
     
     public $parent;
-    
+
+    public $type = 'blogpost';
+
+    private $use_internal_links;
+
     public function __construct($model)
     {
-        
+        $this->use_internal_links = isset($model->use_internal_links) && isset($model->internal_link_field) ? ($model->use_internal_links) : (false);
         $this->model = $model;
-        
     }
         
     public function getRecord()
@@ -23,25 +26,33 @@ class Blogpost extends SearchMap {
             "title" => $this->model->title,
             "content" => $this->model->content,
             "author" => $this->model->author,
-            
         ];
-        
+
+        if($this->use_internal_links) {
+            $record['internal_links'] = true;
+            $record['internal_link_field'] = $this->model->internal_link_field;
+        }
+
         return $record;
-        
     }
     
     public function getSchema()
     {
-       
-        return [
+        $schema = [
             "id" => "long",
             "type" => "keyword",
             "slug" => "keyword",
-            "title" => "long",
+            "title" => "text",
             "content" => "text",
             "author" => "keyword",
-            
         ];
+
+        if($this->use_internal_links) {
+            $schema['internal_links'] = true;
+            $schema['internal_link_field'] = $this->model->internal_link_field;
+        }
+
+        return $schema;
         
     }
     
