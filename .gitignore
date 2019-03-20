@@ -1,0 +1,6 @@
+.DS_Store
+sftp-config.json
+composer.sublime-workspace
+.phpunit.result.cache
+_ide_helper.php
+.idea
