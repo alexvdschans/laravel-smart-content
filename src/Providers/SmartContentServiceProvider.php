@@ -1,7 +1,7 @@
 <?php namespace AvdS\SmartContent\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use AvdS\SmartContent\Libs\Engine;
+use AvdS\SmartContent\Libs\SmartContentEngine;
 
 class SmartContentServiceProvider extends ServiceProvider
 {
@@ -24,7 +24,7 @@ class SmartContentServiceProvider extends ServiceProvider
         
         $this->app->bind('sc', function ($app) {
             
-            return new Engine(config('smartcontent'));
+            return new SmartContentEngine(config('smartcontent'));
             
         });
             

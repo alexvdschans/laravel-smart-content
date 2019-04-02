@@ -4,9 +4,10 @@ use GuzzleHttp;
 use AvdS\SmartContent\Exceptions\TokenNotSetException;
 use AvdS\SmartContent\Exceptions\GeneralShardFailureException;
 use GuzzleHttp\Exception\ServerException;
-use Illuminate\Support\Facades\Log;
 
-class Engine {
+CONST API_URL = 'http://search.thehuddle.nl';
+
+class SmartContentEngine {
     
     protected $token;
     
@@ -20,7 +21,7 @@ class Engine {
 
     public function __construct($config) 
     {
-        $this->api_url = config('smartcontent.api_url');
+        $this->api_url = API_URL;
 
         $this->token = isset($config['token']) ? $config['token'] : null;
        
@@ -32,6 +33,7 @@ class Engine {
             'Authorization' => 'Bearer ' . $this->token,
             'Accept'        => 'application/json',
         ];
+        
     }
     
     public function setIndex($index)
@@ -51,6 +53,7 @@ class Engine {
         }
         
         try {
+
             $defaults = [
                     'page' => 1,
                     'per_page' => 5,
@@ -59,33 +62,34 @@ class Engine {
 
             $params = array_merge($defaults, $params);
 
-            $index = $params['index'];
-            $query = $params['query'];
-            $fields = $params['fields'];
-            $type = $params['type'];
-            
-            $orderBy = 'created_at:desc,commentsCount:desc';
-
             $data = [
-                'index'     => $index,
-                'page'      => 1,
-                'per_page'  => 5,
-//                 'order_by'  => $orderBy,
-                'fields'    => $fields,
-                'type'      => $type,
-                'query'     => $query
+                'query'     => $params['query'],
+                'index'     => $params['index'],
+                'type'      => $params['type'],
+                'fields'    => $params['fields'],
+                'page'      => $params['page'],
+                'per_page'  => $params['per_page'],
             ];
+
+            if(isset($params['order_by'])){                
+                $data['order_by']  = $params['order_by'];
+            }
+            if(isset($params['filters'])){
+                $data['filters']  = $params['filters'];
+            }
             
             $string = http_build_query($data);
 
-            $res = $this->client->request('GET', '/api/v1/search?' . $string,
+            $url = '/api/v1/search?' . $string;
+           
+            $res = $this->client->request('GET', $url,
                     ['headers' => $this->headers]
             );
             
             $data = json_decode($res->getBody())->data;
             
             return $data;
-        
+            
         } catch (ServerException $e) {
             throw new GeneralShardFailureException();
         }
@@ -94,9 +98,10 @@ class Engine {
     
     public function index($data)
     {
+
         $url = '/api/v1/index';
 
-        if(isset($data['use_internal_links']) && $data['use_internal_links'] == true) {
+        if($data['use_internal_links'] == true) {
             $url .= '?internal_links=true&internal_link_field=content';
         }
 
@@ -104,9 +109,7 @@ class Engine {
             'form_params'   => $data,
             'headers'       => $this->headers
         ]);
-
-        Log:info($request->getBody());
-
+        
         return true;
     }   
     
@@ -130,6 +133,8 @@ class Engine {
     
     public function related($params)
     {
+
+        
         $data = [
             'index' => $params['index'],
             'type' => $params['type'],
@@ -137,7 +142,7 @@ class Engine {
             'page' => $params['page'],
             'per_page' => $params['per_page'],
         ];
-        
+
         $string = http_build_query($data);
         
         $request = $this->client->request('GET', '/api/v1/documents/related?' . $string,
@@ -153,4 +158,5 @@ class Engine {
     {
         return $this->call($params);
     }
+    
 }

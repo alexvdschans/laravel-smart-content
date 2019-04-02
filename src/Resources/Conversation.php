@@ -1,8 +1,8 @@
 <?php namespace AvdS\SmartContent\Resources;
 
-class Topic extends SearchMap {
+class Conversation extends SearchMap {
 
-    public $type = 'topic';
+    public $type = 'conversation';
 
     public function __construct($model)
     {
@@ -13,7 +13,7 @@ class Topic extends SearchMap {
     {
         
         $record =  [
-            "type" => "topic",
+            "type" => $this->type,
             "id" => $this->model->id,
             "slug" => $this->model->slug,
             "title" => $this->model->slug,
@@ -45,7 +45,7 @@ class Topic extends SearchMap {
             "id" => "long",
             "type" => "keyword",
             "slug" => "keyword",
-            "title" => "long",
+            "title" => "text",
             "category" => "keyword",
             "content" => "text",
             "author" => "keyword",

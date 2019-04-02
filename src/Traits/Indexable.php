@@ -24,7 +24,6 @@ trait Indexable {
         } else {
             //hardcoded example for now
             $extra_keywords = [[
-                'id' => 100,
                 'keyword' => 'king',
                 'url' => 'https://imu.nl/'
             ]];
@@ -105,7 +104,7 @@ trait Indexable {
         
     }
     
-    public function scopeFind($query, $id)
+    public function scopeFindInIndex($query, $id)
     {
         
         $model = $this;
@@ -113,7 +112,8 @@ trait Indexable {
         $result = SmartContent::search([
             'index' => SmartContent::getIndex(),
             'type' => $model->mapClass,
-            'query' => $search,
+            'filters' => 'id:' . $id,
+            'query' => '',
         ]);
         
         return $this->hydrate($query, $result);
