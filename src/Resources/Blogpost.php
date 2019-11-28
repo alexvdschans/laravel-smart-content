@@ -26,6 +26,7 @@ class Blogpost extends SearchMap {
             "title" => $this->model->title,
             "content" => $this->model->content,
             "author" => $this->model->author,
+            'website_id' => $this->model->website_id,
         ];
 
         if($this->use_internal_links) {
