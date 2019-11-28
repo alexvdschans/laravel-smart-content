@@ -12,30 +12,35 @@ class Conversation extends SearchMap {
     public function getRecord()
     {
         
-        $record =  [
-            "type" => $this->type,
-            "id" => $this->model->id,
-            "slug" => $this->model->slug,
-            "title" => $this->model->slug,
-            "board" => $this->model->channel->name,
-            "content" => $this->model->post->first()->content,
-            "author" => $this->model->user->fullname,
-            "created_at" => $this->model->created_at->toDateTimeString(),
-            "posts" => []
-        ];
-        
-        foreach($this->model->post as $index => $post){
-            if($index > 0){
-                $record['posts'][] = [
-                    "author" => $post->user->fullname,
-                    "content" => $post->content
-                ];
+        if(isset($this->model->user) && isset($this->model->channel) && $this->model->post()->first()){
+            $record =  [
+                "type" => $this->type,
+                "id" => $this->model->id,
+                "slug" => $this->model->slug,
+                "title" => $this->model->title,
+                "board" => $this->model->channel->name,
+                "content" => $this->model->post->first()->content,
+                "author" => $this->model->user->fullname,
+                "created_at" => $this->model->created_at->toDateTimeString(),
+                "posts_content" => "",
+                "tenant" => tenant()->internal_domain,
+                "posts" => [],
+            ];
+            
+            foreach($this->model->post as $index => $post){
+                if($index > 0 && isset($post->user) AND $index < 100){
+                    $record['posts'][] = [
+                        "author" => $post->user->fullname,
+                        "content" => $post->content
+                    ];
+                    $record['posts_content'] .=  ' ' . $post->content;
+                }
             }
+            
+            return $record;
         }
         
-        
-        return $record;
-        
+        return false;
     }
     
     public function getSchema()
@@ -50,6 +55,9 @@ class Conversation extends SearchMap {
             "content" => "text",
             "author" => "keyword",
             "created_at" => "date",
+            "posts" => "nested",
+            "posts_content" => "text",
+            "tenant" => "keyword"
         ];
         
     }

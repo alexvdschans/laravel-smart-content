@@ -74,9 +74,17 @@ class SmartContentEngine {
             if(isset($params['order_by'])){                
                 $data['order_by']  = $params['order_by'];
             }
-            if(isset($params['filters'])){
+            if(isset($params['filters']) && count($params['filters']) > 0){
                 $data['filters']  = $params['filters'];
             }
+            if(isset($params['min'])){
+                $data['min_timestamp']  = $params['min'];
+            }
+            if(isset($params['max'])){
+                $data['max_timestamp']  = $params['max'];
+            }
+            
+            $data['filters'] = 'tenant:' . tenant()->internal_domain;
             
             $string = http_build_query($data);
 
@@ -134,7 +142,6 @@ class SmartContentEngine {
     public function related($params)
     {
 
-        
         $data = [
             'index' => $params['index'],
             'type' => $params['type'],

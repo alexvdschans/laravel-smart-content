@@ -10,8 +10,10 @@ trait Indexable {
     {
         // TODO: check if domain is set in the model, to set the index. Mainly to support Phoenix
         // TODO: mapClass different ways of writing: camelcase, uppercase, 
-        $model = $this;
-        $mapClass   = "AvdS\\SmartContent\\Resources\\" . class_basename($model);
+        
+        $model      = $this;
+        
+        $mapClass   = "AvdS\\SmartContent\\Resources\\" . ucfirst($model->mapClass);
         $map        = new $mapClass($model);
 
         $schema     = $map->getSchema();
@@ -35,41 +37,50 @@ trait Indexable {
             $remove_keywords = [];
         }
 
-        $index_data = [
-            'data'      => [$record],
-            'schema'    => [
-                'index' => SmartContent::getIndex(),
-                'type' => $map->type,
-                'mappings' => $schema
-            ],
-            //hardcoded webhook url for now
-            'webhook_url' => 'http://editor-douwe.phoenix-dev1.imu.nl/search/web_hook_callback'
-        ];
-
-        if($use_internal_links) {
-            $index_data['use_internal_links'] = true;
-            $index_data['internal_link_settings'] = [
-                'ids' => [$model->id],
-                'extra_keywords' => $extra_keywords,
-                'remove_keywords' => $remove_keywords
+        if(isset($record, $schema)){
+          
+            $index_data = [
+                'data'      => [$record],
+                'schema'    => [
+                    'index' => SmartContent::getIndex(),
+                    'type' => $map->type,
+                    'mappings' => $schema
+                ],
+                // hardcoded webhook url for now
+    /**             'webhook_url' => 'http://editor-douwe.phoenix-dev1.imu.nl/search/web_hook_callback' **/
             ];
-        } else {
-            $index_data['use_internal_links'] = false;
+    
+            if($use_internal_links) {
+                $index_data['use_internal_links'] = true;
+                $index_data['internal_link_settings'] = [
+                    'ids' => [$model->id],
+                    'extra_keywords' => $extra_keywords,
+                    'remove_keywords' => $remove_keywords
+                ];
+            } else {
+                $index_data['use_internal_links'] = false;
+            }
+    
+            SmartContent::index($index_data);
+            
+            usleep(300000);
+        
         }
-
-        SmartContent::index($index_data);
+        
     }
     
     public function deleteIndex()
     {
         $model = $this;
-        $mapClass   = "AvdS\\SmartContent\\Resources\\" . class_basename($model);
+        $mapClass   = class_basename($model->mapClass);
 
-        SmartContent::delete([
+        $data = [
             'index' => SmartContent::getIndex(),
             'doc_id' => $model->id,
             'type' => $mapClass
-        ]);
+        ];
+        
+        SmartContent::delete($data);
         
     }
     
@@ -89,16 +100,22 @@ trait Indexable {
         
     }
     
-    public function scopeSearch($query, $search)
+    public function scopeSearch($query, $search, $data = [])
     {
         
         $model = $this;
         
-        $result = SmartContent::search([
+        $searchObject = [
             'index' => SmartContent::getIndex(),
             'type' => $model->mapClass,
-            'query' => $search,
-        ]);
+            'query' => $search
+        ];
+        
+        foreach ($data as $key => $value){
+            $searchObject[$key] = $value;
+        }
+        
+        $result = SmartContent::search($searchObject);
       
         return $this->hydrate($query, $result);
         
@@ -155,12 +172,12 @@ trait Indexable {
                 if (getenv('APP_ENV') == 'local' || getenv('APP_ENV') == 'dev') {
                     Log::info('Debug - smart content - updating Index');
                 }
-                $model->updateIndex();
+//                 $model->updateIndex();
             } elseif(isset($model->status) && $model->status == 'archived') {
                 if (getenv('APP_ENV') == 'local' || getenv('APP_ENV') == 'dev') {
                     Log::info('Debug - smart content - deleting Index');
                 }
-                $model->deleteIndex();
+//                 $model->deleteIndex();
             }
         });
             

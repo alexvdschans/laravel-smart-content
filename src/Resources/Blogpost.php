@@ -1,6 +1,6 @@
 <?php namespace AvdS\SmartContent\Resources;
 
-class BlogPost extends SearchMap {
+class Blogpost extends SearchMap {
 
     public $model; 
     
