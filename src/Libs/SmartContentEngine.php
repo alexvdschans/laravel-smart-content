@@ -83,9 +83,7 @@ class SmartContentEngine {
             if(isset($params['max'])){
                 $data['max_timestamp']  = $params['max'];
             }
-            
-            $data['filters'] = 'tenant:' . tenant()->internal_domain;
-            
+
             $string = http_build_query($data);
 
             $url = '/api/v1/search?' . $string;
